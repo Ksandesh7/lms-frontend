@@ -18,12 +18,8 @@ export const CartProvider = ({ children }) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === book.id);
       if (existingItem) {
-        // If book already exists in cart, update quantity
-        return prevCart.map((item) =>
-          item.id === book.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+        // If book already exists in cart, return prevcart
+        return prevCart;
       } else {
         // Add new book to cart
         return [...prevCart, { ...book, quantity: 1 }];

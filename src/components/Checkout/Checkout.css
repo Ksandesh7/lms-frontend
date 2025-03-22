@@ -52,8 +52,7 @@
   }
   
   /* Author & Price */
-  .cart-author,
-  .cart-price {
+  .cart-author {
     font-size: 14px;
     color: #777;
   }

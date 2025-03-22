@@ -25,7 +25,6 @@ const Book = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [genres, setGenres] = useState([]);
     const [selectedGenre, setSelectedGenre] = useState("");
-    const [maxPrice, setMaxPrice] = useState("");
     const [sortBy, setSortBy] = useState("title,asc");
 
     // Initial data fetch - we need this to extract genres
@@ -36,7 +35,7 @@ const Book = () => {
                 const token = localStorage.getItem("token");
                 // Fetch a larger initial set to extract genres
                 const response = await axios.get(
-                    `http://localhost:8080/api/books?page=0&size=50`,
+                    `${import.meta.env.VITE_API_URL}/books?page=0&size=50`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -79,10 +78,9 @@ const Book = () => {
                 const token = localStorage.getItem("token");
                 
                 // Build URL with query parameters
-                let url = `http://localhost:8080/api/books?page=0&size=10&sort=${sortBy}`;
+                let url = `${import.meta.env.VITE_API_URL}/books?page=0&size=10&sort=${sortBy}`;
                 if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
                 if (selectedGenre) url += `&genre=${encodeURIComponent(selectedGenre)}`;
-                if (maxPrice) url += `&maxPrice=${maxPrice}`;
                 
                 const response = await axios.get(url, {
                     headers: {
@@ -113,7 +111,7 @@ const Book = () => {
         }, 500);
         
         return () => clearTimeout(timeoutId);
-    }, [searchTerm, selectedGenre, maxPrice, sortBy, initialLoading]);
+    }, [searchTerm, selectedGenre, sortBy, initialLoading]);
 
     const fetchMoreBooks = async () => {
         if (loading || page >= totalPages) return;
@@ -123,10 +121,10 @@ const Book = () => {
             const token = localStorage.getItem("token");
             
             // Build URL with query parameters
-            let url = `http://localhost:8080/api/books?page=${page}&size=10&sort=${sortBy}`;
+            let url = `${import.meta.env.VITE_API_URL}/books?page=${page}&size=10&sort=${sortBy}`;
             if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
             if (selectedGenre) url += `&genre=${encodeURIComponent(selectedGenre)}`;
-            if (maxPrice) url += `&maxPrice=${maxPrice}`;
+            // if (maxPrice) url += `&maxPrice=${maxPrice}`;
             
             const response = await axios.get(url, {
                 headers: {
@@ -154,23 +152,65 @@ const Book = () => {
         event.target.src = DEFAULT_IMAGE;
     };
 
-    const handleAddToCart = (book) => {
-        addToCart(book);
-        toast.success(`"${book.title}" added to cart!`, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            theme: "light",
-        });
+    const handleAddToCart = async(book) => {
+        const isAlreadyInCart = cart.some((item)=>item.id===book.id);
+        if(isAlreadyInCart) {
+            toast.info(`You already have "${book.title}" in your cart`, {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+            });
+            return ;
+        }
+        try {
+            const token = localStorage.getItem("token");
+            const userId = localStorage.getItem("userId");
+
+            const {data} = await axios.get(`${import.meta.env.VITE_API_URL}/loans/check/${userId}/${book.id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            if(data.hasActiveLoan) {
+                toast.warning(`You have already borrowed "${book.title}". Please return it first.`, {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    theme: "light",
+                })
+                return ;
+            }
+
+            addToCart(book);
+            // addToCart(book);
+            toast.success(`"${book.title}" added to cart!`, {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+            });       
+        }
+        catch(err) {
+            console.error("Error checking loan status", error);
+            toast.error(`Failed to verify availability for "${book.title}". Please try again.`);
+        }
     };
 
     const handleOpenModal = async (bookId) => {
         try {
             const token = localStorage.getItem("token");
-            const { data } = await axios.get(`http://localhost:8080/api/books/${bookId}`, {
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/books/${bookId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -191,9 +231,9 @@ const Book = () => {
         setSelectedGenre(e.target.value);
     };
 
-    const handleMaxPriceChange = (e) => {
-        setMaxPrice(e.target.value);
-    };
+    // const handleMaxPriceChange = (e) => {
+    //     setMaxPrice(e.target.value);
+    // };
 
     const handleSortChange = (e) => {
         setSortBy(e.target.value);
@@ -202,11 +242,11 @@ const Book = () => {
     const handleClearFilters = () => {
         setSearchTerm("");
         setSelectedGenre("");
-        setMaxPrice("");
+        // setMaxPrice("");
         setSortBy("title,asc");
     };
 
-    const hasActiveFilters = searchTerm || selectedGenre || maxPrice || sortBy !== "title,asc";
+    const hasActiveFilters = searchTerm || selectedGenre || sortBy !== "title,asc";
 
     if (initialLoading) {
         return (
@@ -244,7 +284,7 @@ const Book = () => {
                         ))}
                     </select>
                     
-                    <input
+                    {/* <input
                         type="number"
                         placeholder="Max Price"
                         value={maxPrice}
@@ -252,7 +292,7 @@ const Book = () => {
                         className="price-input"
                         min="0"
                         step="0.01"
-                    />
+                    /> */}
                     
                     <select
                         value={sortBy}
@@ -263,8 +303,8 @@ const Book = () => {
                         <option value="title,desc">Title (Z-A)</option>
                         <option value="author,asc">Author (A-Z)</option>
                         <option value="author,desc">Author (Z-A)</option>
-                        <option value="price,asc">Price (Low to High)</option>
-                        <option value="price,desc">Price (High to Low)</option>
+                        {/* <option value="price,asc">Price (Low to High)</option> */}
+                        {/* <option value="price,desc">Price (High to Low)</option> */}
                     </select>
                     
                     {hasActiveFilters && (
@@ -298,9 +338,6 @@ const Book = () => {
                                 <div className="book-rating">
                                     ⭐⭐⭐⭐⭐ ({book.rating})
                                 </div>
-                                <p className="book-price">
-                                    ${book.price.toFixed(2)}
-                                </p>
                                 <p
                                     className={`book-status ${
                                         book.status === "AVAILABLE"

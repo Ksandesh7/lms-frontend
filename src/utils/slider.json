@@ -1,37 +1,31 @@
 [
   {
     "name": "Rich Dad Poor Dad",
-    "price": "140",
     "detail": "A personal finance classic that contrasts the mindset of the wealthy and the middle class ",
     "image": "./r1.webp"
   },
   {
     "name": "The Alchemist",
-    "price": "100",
     "detail": " A philosophical novel about following one's dreams, as a young shepherd embarks on a journey to discover his personal legend.",
     "image": "./r2.webp"
   },
   {
     "name": "Playing It My Way",
-    "price": "100",
     "detail": "An inspiring autobiography of cricket legend Sachin Tendulkar, detailing his journey, struggles, and achievements in the sport.",
     "image": "./r3.jpg"
   },
   {
     "name": "Harry Potter",
-    "price": "150",
     "detail": "A magical fantasy series following a young wizard, Harry Potter, as he discovers his destiny and battles the dark lord",
     "image": "./r4.jpg"
   },
   {
     "name": "The Last Outpost",
-    "price": "120",
     "detail": "A gripping tale of survival and resilience,set in dystopian settings, where characters defend humanity’s final stronghold.",
     "image": "./r5.jpg"
   },
   {
     "name": "Power of Your Subconscious Mind",
-    "price": "100",
     "detail": " A self-help classic that explores how harnessing the subconscious mind can transform one’s life through positive thinking.",
     "image": "./r6.webp"
   }

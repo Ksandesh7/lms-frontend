@@ -10,10 +10,10 @@ const Checkout = () => {
   const navigate = useNavigate();
 
   const totalItems = cart.reduce((sum, book) => sum + book.quantity, 0);
-  const totalPrice = cart.reduce(
-    (sum, book) => sum + book.quantity * book.price,
-    0
-  );
+  // const totalPrice = cart.reduce(
+  //   (sum, book) => sum + book.quantity * book.price,
+  //   0
+  // );
 
   const handleCheckout = async() => {
     const token = localStorage.getItem("token");
@@ -27,7 +27,7 @@ const Checkout = () => {
     try {
       for(const book of cart) {
         const {data} = await axios.get(
-          `http://localhost:8080/api/books/${book.id}`,
+          `${import.meta.env.VITE_API_URL}/books/${book.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ const Checkout = () => {
       for(const book of cart) {
         for(let i=0; i<book.quantity; i++) {
           await axios.post(
-            "http://localhost:8080/api/loans",
+            `${import.meta.env.VITE_API_URL}/loans`,
             {
               userId, 
               bookId: book.id,
@@ -82,10 +82,10 @@ const Checkout = () => {
             <div className="cart-info">
               <h3 className="cart-title">{book.title}</h3>
               <p className="cart-author">{book.author}</p>
-              <p className="cart-price">${book.price.toFixed(2)}</p>
+              {/* <p className="cart-price">${book.price.toFixed(2)}</p> */}
               
               {/* Quantity Selector */}
-              <div className="quantity-selector">
+              {/* <div className="quantity-selector">
                 <button
                   onClick={() => updateQuantity(book.id, book.quantity - 1)}
                   disabled={book.quantity <= 1}
@@ -98,7 +98,7 @@ const Checkout = () => {
                 >
                   +
                 </button>
-              </div>
+              </div> */}
 
               {/* Remove Button */}
               <button
@@ -115,7 +115,7 @@ const Checkout = () => {
       {/* Total Section */}
       <div className="checkout-summary">
         <p>Total Items: <strong>{totalItems}</strong></p>
-        <p>Total Price: <strong>${totalPrice.toFixed(2)}</strong></p>
+        {/* <p>Total Price: <strong>${totalPrice.toFixed(2)}</strong></p> */}
         <button className="checkout-btn" onClick={handleCheckout}>Proceed to Checkout</button>
       </div>
 

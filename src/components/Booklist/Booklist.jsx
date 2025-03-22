@@ -77,7 +77,7 @@ const BookList = () => {
             try {
                 const token = localStorage.getItem("token"); // Retrieve token from localStorage
                 const response = await axios.get(
-                    "http://localhost:8080/api/books",
+                    `${import.meta.env.VITE_API_URL}/books`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -108,7 +108,7 @@ const BookList = () => {
             <th>ID</th>
             <th>Name</th>
             <th>Author</th>
-            <th>Price (₹)</th>
+            {/* <th>Price (₹)</th> */}
             <th>Quantity</th>
             <th>Action</th>
           </tr>
@@ -119,7 +119,7 @@ const BookList = () => {
               <td>{book.id}</td>
               <td>{book.title}</td>
               <td>{book.author}</td>
-              <td>₹{book.price}</td>
+              {/* <td>₹{book.price}</td> */}
               <td>{book.quantity}</td>
               <td>
                 <button

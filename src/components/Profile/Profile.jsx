@@ -24,13 +24,13 @@ const Profile = () => {
     const fetchUserData = async () => {
       try {
         // Get user info from token
-        const userResponse = await axios.get(`http://localhost:8080/api/users/${userId}`, {
+        const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUser(userResponse.data);
 
         // Fetch user's loans
-        const loansResponse = await axios.get(`http://localhost:8080/api/loans/user/${userId}`, {
+        const loansResponse = await axios.get(`${import.meta.env.VITE_API_URL}/loans/user/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const userLoans = loansResponse.data;
@@ -40,7 +40,7 @@ const Profile = () => {
         const titles = {};
         for (const loan of userLoans) {
           try {
-            const bookResponse = await axios.get(`http://localhost:8080/api/books/${loan.bookId}`, {
+            const bookResponse = await axios.get(`${import.meta.env.VITE_API_URL}/books/${loan.bookId}`, {
               headers: { Authorization: `Bearer ${token}` }
             });
             titles[loan.bookId] = bookResponse.data.title;
@@ -55,7 +55,7 @@ const Profile = () => {
         const allFines = [];
         for (const loan of userLoans) {
           try {
-            const fineResponse = await axios.get(`http://localhost:8080/api/fines/${loan.id}`, {
+            const fineResponse = await axios.get(`${import.meta.env.VITE_API_URL}/fines/${loan.id}`, {
               headers: { Authorization: `Bearer ${token}` }
             });
             if (fineResponse.data) {

@@ -26,14 +26,14 @@ const Payment = () => {
       
       try {
         // Fetch fine details
-        const fineResponse = await axios.get(`http://localhost:8080/api/fines/${loanId}`, {
+        const fineResponse = await axios.get(`${import.meta.env.VITE_API_URL}/fines/${loanId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setFine(fineResponse.data);
         setFineId(fineResponse.data.id);
         
         // Fetch loan details to check if it's still active
-        const loanResponse = await axios.get(`http://localhost:8080/api/loans/${loanId}`, {
+        const loanResponse = await axios.get(`${import.meta.env.VITE_API_URL}/loans/${loanId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setLoan(loanResponse.data);
@@ -71,7 +71,7 @@ const Payment = () => {
         console.log("2. paymentData : ", paymentData);
 
       
-      await axios.post('http://localhost:8080/api/fines/pay', paymentData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/fines/pay`, paymentData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -82,7 +82,7 @@ const Payment = () => {
       
       // Step 2: If loan is still active, return the book
       if (loan && loan.status === 'ACTIVE') {
-        await axios.put(`http://localhost:8080/api/loans/return/${loanId}`, {}, {
+        await axios.put(`${import.meta.env.VITE_API_URL}/loans/return/${loanId}`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
